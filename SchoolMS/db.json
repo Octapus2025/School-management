@@ -1,0 +1,44 @@
+{
+    "users":[
+        {
+            "id":1,
+            "name":"Leanne Graham",
+            "username":"Bret",
+            "email":"AanishRizmy28@gmail.com",
+            "phone":"077 572 1275",
+            "website":"leanegard.org"
+        },
+        {
+            "id":2,
+            "name":"Leanne Graham",
+            "username":"Bret",
+            "email":"AanishRizmy28@gmail.com",
+            "phone":"077 572 1275",
+            "website":"leanegard.org"
+        },
+        {
+            "id":3,
+            "name":"Leanne Graham",
+            "username":"Bret",
+            "email":"AanishRizmy28@gmail.com",
+            "phone":"077 572 1275",
+            "website":"leanegard.org"
+        },
+        {
+            "id":4,
+            "name":"Leanne Graham",
+            "username":"Bret",
+            "email":"AanishRizmy28@gmail.com",
+            "phone":"077 572 1275",
+            "website":"leanegard.org"
+        },
+        {
+            "id":5,
+            "name":"Leanne Graham",
+            "username":"Bret",
+            "email":"AanishRizmy28@gmail.com",
+            "phone":"077 572 1275",
+            "website":"leanegard.org"
+        }
+    ]
+}

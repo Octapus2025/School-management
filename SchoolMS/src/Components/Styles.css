@@ -1,3 +1,158 @@
+
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+.row {
+    --bs-gutter-x: 3.5rem;
+    --bs-gutter-y: 0;
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: calc(-1 * var(--bs-gutter-y));
+    margin-right: calc(-.5 * var(--bs-gutter-x));
+    margin-left: calc(-.5 * var(--bs-gutter-x));
+}
+
+
+#root {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 2rem;
+    text-align: center;
+}
+
+.container-fluid {
+    padding: 0;
+}
+
+/*student-form*/
+
+.full-width {
+    width: 100%;
+}
+  
+.form-container {
+    display: flex;
+    justify-content: start;
+    
+}
+
+.form-label {
+    text-align: left;
+}
+  
+.btn-start {
+    display: flex;
+    justify-content: start;
+    margin-top: 1rem;
+}
+.btn-delete{
+    background-color: red;
+    border-color: red;
+}
+
+.btn-view{
+    background-color: white;
+    color: black;
+    border: 1px solid black;
+    padding: 10px;
+}
+
+  
+.mt-3 {
+    margin-top: 1rem;
+}
+  
+.px-5 {
+    padding-left: 3rem;
+    padding-right: 3rem;
+}
+
+.bg-dark {
+    background-color: #343a40;
+}
+
+.nav-link {
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.nav-link:hover {
+    background-color: #495057;
+}
+
+.nav-pills .nav-link.active {
+    background-color: #007bff;
+}
+
+.vh-full {
+    min-height: 100vh;
+}
+
+.h-full {
+    height: 100%;
+}
+
+.px-0 {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.p-0 {
+    padding: 0;
+}
+
+.p-2 {
+    padding: 0.5rem;
+}
+
+.p-4 {
+    padding: 1.5rem;
+}
+
+.m-0 {
+    margin: 0;
+}
+
+.d-flex {
+    display: flex;
+}
+
+.flex-column {
+    flex-direction: column;
+}
+
+.align-items-center {
+    align-items: center;
+}
+
+.align-items-sm-start {
+    align-items: flex-start;
+}
+
+.justify-content-center {
+    justify-content: center;
+}
+
+.shadow {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.min-vh-100 {
+    min-height: 100vh;
+}
+
+.fs-5 {
+    font-size: 1.25rem;
+}
+
+.fw-bolder {
+    font-weight: bolder;
+}
 .loginPage {
     
     background-position: center;
@@ -36,3 +191,6 @@
     text-align: center;
     margin-bottom: 1.5rem;
 }
+
+
+
