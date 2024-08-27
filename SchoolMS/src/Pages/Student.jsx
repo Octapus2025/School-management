@@ -5,9 +5,9 @@ import axios from "axios";
 
 const Student = () => {
   const [student, setStudent] = useState({
-    sn: "",
-    admissionno: "",  // Corrected field name
-    studentname: "",
+    SN: "",
+    AdmissionNo: "",  // Corrected field name
+    Name: "",
     class: "",
     gender: "",
     state: "",
@@ -74,22 +74,22 @@ const Student = () => {
                   </div>
                   <div className="col-12">
                     <label htmlFor="inputAdmissionNo" className="form-label">Admission No:</label>
-                    <input type="text" id="inputAdmissionNo" placeholder="Enter Admission No." className='form-control rounded-0' autoComplete="off"
+                    <input type="text" id="inputAdmissionNo" placeholder="Enter Admission No." className='form-control rounded-0' 
                       onChange={(s) => setStudent({ ...student, admissionno: s.target.value })} />
                   </div>
                   <div className="col-12">
                     <label htmlFor="inputStudentName" className="form-label">Student Name:</label>
-                    <input type="text" id="inputStudentName" placeholder="Enter Student Name" className='form-control rounded-0' autoComplete="off"
+                    <input type="text" id="inputStudentName" placeholder="Enter Student Name" className='form-control rounded-0' 
                       onChange={(s) => setStudent({ ...student, studentname: s.target.value })} />
                   </div>
                   <div className="col-12">
                     <label htmlFor="inputClass" className="form-label">Class:</label>
-                    <input type="text" id="inputClass" placeholder="Enter Class" className='form-control rounded-0' autoComplete="off"
+                    <input type="text" id="inputClass" placeholder="Enter Class" className='form-control rounded-0' 
                       onChange={(s) => setStudent({ ...student, class: s.target.value })} />
                   </div>
                   <div className="col-12">
                     <label htmlFor="inputGender" className="form-label">Gender:</label>
-                    <input type="text" id="inputGender" placeholder="Enter Gender" className='form-control rounded-0' autoComplete="off"
+                    <input type="text" id="inputGender" placeholder="Enter Gender" className='form-control rounded-0' 
                       onChange={(s) => setStudent({ ...student, gender: s.target.value })} />
                   </div>
                   <div className="col-12">
@@ -104,7 +104,7 @@ const Student = () => {
                   
                   <div className="col-12 mb-3">
                     <label htmlFor="inputGroupFile01" className="form-label">Select Image:</label>
-                    <input type="file" id="inputGroupFile01" name="image" placeholder="Enter Image" className='form-control rounded-0' autoComplete="off"
+                    <input type="file" id="inputGroupFile01" name="image" placeholder="Enter Image" className='form-control rounded-0' 
                       onChange={(s) => setStudent({ ...student, image: s.target.files[0] })} />
                   </div>
                   <div className="col-12 d-flex justify-content-between">
