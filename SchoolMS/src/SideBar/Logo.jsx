@@ -1,11 +1,15 @@
 import React from 'react';
-import {FireFilled} from '@ant-design/icons';
+import { FaBook } from "react-icons/fa";
+
 
 const Logo =()=>{
     return(
-        <div className="logo">
-            <div className="logo-icon">
-                <FireFilled/>
+        <div className="logo" style={{display:'flex',alignItems:'center'}}>
+            <div className="logo-icon" style={{marginRight:'8px'}}>
+            <FaBook size={24}/>
+            </div>
+            <div className="logo-text">
+                EDUGRID
             </div>
         </div>
     );

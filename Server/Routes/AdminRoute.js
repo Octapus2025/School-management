@@ -1,23 +1,19 @@
 import express from 'express';
-import { con } from '../utils/db.js'; // Use named import
-import bcrypt, { hash } from 'bcrypt'
+import { con } from '../utils/db.js';
 import multer from "multer";
 import path from "path";
 import jwt from "jsonwebtoken";
 
 const router = express.Router();
 
+// Admin login route
 router.post('/adminlogin', (req, res) => {
-    const sql = "SELECT * FROM admin WHERE username = ? and password = ?";
+    const sql = "SELECT * FROM admin WHERE username = ? AND password = ?";
     con.query(sql, [req.body.username, req.body.password], (err, result) => {
         if (err) return res.json({ loginStatus: false, Error: "Query error" });
-        if (result.length > 0) { // Fixed typo: "lenght" to "length"
+        if (result.length > 0) {
             const username = result[0].username;
-            const token = jwt.sign(
-                { role: "admin", username: username },
-                "jwt_secret_key",
-                { expiresIn: "1d" }
-            );
+            const token = jwt.sign({ role: "admin", username: username }, "jwt_secret_key", { expiresIn: "1d" });
             res.cookie('token', token);
             return res.json({ loginStatus: true });
         } else {
@@ -26,61 +22,99 @@ router.post('/adminlogin', (req, res) => {
     });
 });
 
-router.get('/state', (req,res)=>{
-    const sql = "SELECT * FROM state";
-    con.query(sql,(err,result)=>{
-        if(err) return res.json({Status:false, Error:"Query Error"})
-            return res.json({Status:true,Result:result})
-    })
-})
-
-router.post('/add_state' , (req,res)=>{
-    const sql = "INSERT INTO state ('name') VALUES (?)"
-    con.query(sql, [req.body.state],(err, result) =>{
-        if(err) return res.json({Status:false, Error:"Query Error"})
-        return res.json({Status:true})
-    })
-})
-
-//image upload
+// Multer storage for image upload
 const storage = multer.diskStorage({
-    destination:(req,file,cb)=>{
-        cb(null,'Public/Images')
+    destination: (req, file, cb) => {
+        cb(null, 'Public/Images');
     },
-    filename:(req,file,cb)=>{
-        cb(null,file.fildname + "_" + Date.now() + path.extname(file.originalname))
+    filename: (req, file, cb) => {
+        cb(null, `${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`);
     }
-})
-const upload = multer({
-    storage:storage
-})
+});
 
-//end image upload
+const upload = multer({ storage: storage });
 
+// Add student route
 router.post('/add_student', upload.single('image'), (req, res) => {
-    const sql = `INSERT INTO student (SN, AdmissionNo, Name, Class, Gender, state, image) VALUES (?)`;
-    bcrypt.hash(req.body.AdmissionNo, 10, (err, hash) => {
-        if (err) return res.json({ Status: false, Error: "Query Error0" });
-        const values = [
-            req.body.SN,
-            hash,
-            req.body.Name,
-            req.body.Class,
-            req.body.Gender,
-            req.body.state,
-            
-            
-            req.file.filename
-        ];
-        con.query(sql, [values], (err, result) => {
-            if (err) return res.json({ Status: false, Error: err });
-            return res.json({ Status: true });
-        });
+    const { sn, admissionno, studentname, class: studentClass, gender, city } = req.body;
+    const image = req.file ? req.file.filename : null;
+
+    if (!admissionno || !studentname || !studentClass || !gender || !city) {
+        return res.json({ Status: false, Error: "Missing required fields" });
+    }
+
+    const sql = `INSERT INTO student (SN, AdmissionNo, Name, Class, Gender, city, image) VALUES (?)`;
+    const values = [sn, admissionno, studentname, studentClass, gender, city, image];
+
+    con.query(sql, [values], (err, result) => {
+        if (err) return res.json({ Status: false, Error: err.message });
+        return res.json({ Status: true });
     });
 });
 
-router.get('/add_student', (req, res) => {
+// Get all students
+router.get('/student', (req, res) => {
     const sql = "SELECT * FROM student";
+    con.query(sql, (err, result) => {
+        if (err) return res.json({ Status: false, Error: "Query Error" });
+        return res.json({ Status: true, Result: result });
+    });
+});
+
+router.get('/student/:sn',(req,res)=>{
+    const sn = req.params.sn;
+    const sql = "SELECT * FROM student WHERE SN =?";
+    con.query(sql,[sn] ,(err, result) => {
+        if (err) return res.json({Status:false, Error})
+        return res.json({Status:true,Result:result})
+    })
+})
+
+//Get students by class 
+router.get('/student_class',(req,res)=>{
+    const Class = req.query.Class;
+    const sql = "SELECT * FROM student WHERE Class =?";
+    con.query(sql,[Class],(err,result)=>{
+        if (err) return res.json({Status:false,Error:"Query Error"});
+        return res.json({Status:true, Result:result});
+    });
+});
+
+// Update student route
+router.put('/edit_student/:sn', (req, res) => {
+    const sn = req.params.sn;
+    const { admissionno, studentname, class: studentClass, gender, city } = req.body;
+
+    const sql = `UPDATE student SET AdmissionNo = ?, Name = ?, Class = ?, Gender = ?, city = ? WHERE sn = ?`;
+    const values = [admissionno, studentname, studentClass, gender, city, sn];
+
+    con.query(sql, values, (err, result) => {
+        if (err) return res.json({ Status: false, Error: "Query Error" });
+        return res.json({ Status: true, Result: result });
+    });
+});
+
+// Add staff route
+router.post('/add_staff', upload.single('image'), (req, res) => {
+    const { id, teachername, email, contactnumber, dob, gender, city, subject, educationalqualification, university, description, nic, joindate } = req.body;
+    const image = req.file ? req.file.filename : null;
+
+    if (!teachername || !email || !contactnumber || !gender || !subject) {
+        return res.json({ Status: false, Error: "Missing required fields" });
+    }
+
+    const sql = `INSERT INTO staff (id, teacher_name, email, contactnumber, dob, gender, city, subject, educationqualification, university, description, nic, joindate, image) VALUES (?)`;
+    const values = [id, teachername, email, contactnumber, dob, gender, city, subject, educationalqualification, university, description, nic, joindate, image];
+
+    con.query(sql, [values], (err, result) => {
+        if (err) return res.json({ Status: false, Error: err.message });
+        return res.json({ Status: true });
+    });
+});
+
+// Get all staff
+router.get('/staff', (req, res) => {
+    const sql = "SELECT * FROM staff";
     con.query(sql, (err, result) => {
         if (err) return res.json({ Status: false, Error: "Query Error" });
         return res.json({ Status: true, Result: result });

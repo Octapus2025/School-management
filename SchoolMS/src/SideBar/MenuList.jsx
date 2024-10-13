@@ -1,10 +1,12 @@
+import React from 'react';
 import { Menu } from 'antd';
 import { HomeOutlined, UsergroupAddOutlined, BookOutlined, TeamOutlined, DollarOutlined, ScheduleOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import './Menulist.css'
 
-const MenuList = ({ darkTheme }) => {
+const MenuList = () => {
     return ( 
-        <Menu theme={darkTheme ? 'dark' : 'light'} mode="inline" className="menu-bar">
+        <Menu theme="light" mode="inline" className="menu-bar">
             <Menu.Item key="dashboard" icon={<HomeOutlined />}>
                 <Link to="/dashboard">Dashboard</Link>
             </Menu.Item>
@@ -16,7 +18,7 @@ const MenuList = ({ darkTheme }) => {
                     <Link to="/dashboard/student">All Students</Link>
                 </Menu.Item>
                 <Menu.Item key="Add Students" icon={<BookOutlined />}>
-                    <Link to="/students/add">Add Students</Link>
+                    <Link to="/dashboard/addstudent">Add Students</Link>
                 </Menu.Item>
             </Menu.SubMenu>
             <Menu.SubMenu key="teacher" icon={<TeamOutlined />} title="Teachers">
@@ -24,17 +26,18 @@ const MenuList = ({ darkTheme }) => {
                     <Link to="/dashboard/staff">All Teachers</Link>
                 </Menu.Item>
                 <Menu.Item key="Add Teachers" icon={<TeamOutlined />}>
-                    <Link to="/teachers/add">Add Teachers</Link>
+                    <Link to="/dashboard/addstaff">Add Teachers</Link> {/* Corrected Path */}
                 </Menu.Item>
-            </Menu.SubMenu>
+            </Menu.SubMenu> 
             <Menu.Item key="payments" icon={<DollarOutlined />}>
-                <Link to="/payments">Payments</Link>
+                <Link to="/dashboard/payments">Payments</Link> {/* Ensure correct path for payments as well */}
             </Menu.Item>
             <Menu.Item key="timetable" icon={<ScheduleOutlined />}>
-                <Link to="/timetable">Time Table</Link>
+                <Link to="/dashboard/timetable">Time Table</Link> {/* Ensure correct path for timetable */}
             </Menu.Item>
         </Menu>
     );
 };
+
 
 export default MenuList;

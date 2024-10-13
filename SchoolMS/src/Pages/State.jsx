@@ -33,7 +33,7 @@ const State = () => {
                     {
                         state.map(s => (
                             <tr>
-                                <td>{s.name}</td>
+                                <td>{s.state_name}</td>
                             </tr>
                         ))
                     }
