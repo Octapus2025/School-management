@@ -23,9 +23,14 @@ const Student = () => {
   })
 
   function handleSubmit(sn){
-    setUpdateState(sn)
+    setUpdateState(sn);
   }
 
+  function handleUpdate(){
+    // Handle teh update
+    console.log("Update button clicked ");
+    setUpdateState(-1);// Close the edit mode
+  }
   
 
   return (
@@ -49,7 +54,12 @@ const Student = () => {
             <tbody>
               {
                 students.map((s) =>(
-                  updateState === s.sn ? <EditList s={s} students={students} setStudents={setStudents}/> :
+                  updateState === s.sn ? <EditList
+                  key={s.SN}
+                  s={s} 
+                  students={students} 
+                  setStudents={setStudents}
+                  setUpdateState={setUpdateState}/> :
                   <tr key={s.SN}>
                     <td>{s.SN}</td>
                     <td>{s.AdmissionNo}</td>
@@ -74,25 +84,29 @@ const Student = () => {
   );
 };
 
-function EditList({s,students,setStudents}){
-  function handInput(event){
-    const sn = event.target.SN;
-    const value = sn.value;
-    const studentlist =students.map((students)=>(
-      students.SN === s.SN ? {...students,name:value} : students
-    ))
-
-    setStudents(studentlist)
+function EditList({s,students,setStudents,setUpdateState}){
+  function handleInputChange(event) {
+    const { name, value } = event.target;
+    // Create an updated list
+    const updatedStudentlist = students.map((student) =>
+      student.SN === s.SN ? { ...student, [name]: value } : student
+    );
+    setStudents(updatedStudentlist);
   }
+  
+
   return (
       <tr>
-        <td><input type="text" onChange={handInput} name='S/N' value={s.SN}/></td>
-        <td><input type="text" name='Admissionno' value={s.AdmissionNo}/></td>
-        <td><input type="text" name='Name' value={s.Name}/></td>
-        <td><input type="text" name='Class' value={s.Class}/></td>
-        <td><input type="text" name='Gender' value={s.Gender}/></td>
-        <td><input type="text" name='City' value={s.city} /></td>
-        <td><button type="text" name='submit'>Update</button></td>
+        <td><input type="text"  name="S/N" value={s.SN || ''} onChange={handleInputChange}/></td>
+        <td><input type="text" name="Admissionno" value={s.AdmissionNo || ''} onChange={handleInputChange}/></td>
+        <td><input type="text" name="Name" value={s.Name || ''} onChange={handleInputChange}/></td>
+        <td><input type="text" name="Class" value={s.Class || ''} onChange={handleInputChange}/></td>
+        <td><input type="text" name="Gender" value={s.Gender || ''} onChange={handleInputChange}/></td>
+        <td><input type="text" name="City" value={s.city ||''} onChange={handleInputChange}/></td>
+        <td><input type="text" name="Image" value={s.image || ''} onChange={handleInputChange}/></td>
+        <td>
+          <button type="text" onClick={handleUpdate}>Update</button>
+        </td>
       </tr>
   )
 }
