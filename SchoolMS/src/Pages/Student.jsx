@@ -1,37 +1,79 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import './Styles.css';
-import { Link } from "react-router-dom";
-
 
 const Student = () => {
-  const [students,setStudents]=useState([]);
-  const [updateState,setUpdateState] = useState(-1);
+  const [students, setStudents] = useState([]); // list of students
+  const [editSN,setEditSN] = useState(null); // SN of the student being edited
+  const [editData,setEditData] = useState({
+    AdmissionNo:'',
+    Name:'',
+    Class:'',
+    Gender:'',
+    city:'',
+    image:'',
+  }); // Editable student data
+  const [deleteSN,setDeleteSN] = useState(null);// SN of the student being deleted
   
-  
-  useEffect(()=>{
-    // fetch all students 
+
+
+
+  useEffect(() => {
+    // Fetch all students
     axios.get('http://localhost:3000/auth/student')
-    .then(result =>{
-      if(result.data.Status){
-        setStudents(result.data.Result); // Assuming result contains the list of status 
-      } else{
-        console.error(result.data.Error); //Handle Errors
-      }
-    })
-    .catch(err => console.log(err))
-  })
+      .then(result => {
+        if (result.data.Status) {
+          setStudents(result.data.Result); // Assuming result contains the list of students
+        } else {
+          console.error(result.data.Error); // Handle Errors
+        }
+      })
+      .catch(err => console.log(err));
+  }, []);
 
-  function handleSubmit(sn){
-    setUpdateState(sn);
-  }
 
-  function handleUpdate(){
-    // Handle teh update
-    console.log("Update button clicked ");
-    setUpdateState(-1);// Close the edit mode
-  }
-  
+  //Handle Edit button Click
+  const handleEdit = (student)=>{
+    setEditSN(student.SN);//Set the current student ID
+    setEditData(student); // Populate editData with current student info
+  };
+
+  //Handle form input change
+  const handleChange = (e)=>{
+    const {name,value} = e.target;
+    setEditData((prev) => ({...prev,[name]: value}));
+  };
+
+
+  // Handle update submission
+  const handleUpdate = ()=> {
+    axios.put(`http://localhost:3000/auth/edit_student/${editSN}`,editData)
+      .then (response => {
+        if (response.data.Status){
+            // Update students 
+            setStudents(students.map(item => item.SN === editSN ? {...item, ...editData} : item));
+            setEditSN(null); // Exit edit mode
+        } else {
+          console.error(response.data.Error); //Handle Errors
+        }   
+      })
+      .catch(error => console.error(error));
+  };
+
+  //Handle Delete 
+    const handleDelete = ()=>{
+      axios.delete(`http://localhost:3000/auth/delete_student/${deleteSN}`)
+        .then(response => {
+          if (response.data.Status){
+            //Delete students
+            setStudents(students.filter(item => item.SN !== deleteSN ));
+            setDeleteSN(null);// Exit edit mode
+          } else{
+            console.error(response.data.Error); // Handle Errors
+          }
+        })
+        .catch(error => console.error(error));
+    }
 
   return (
     <div className='px-5 mt-3'>
@@ -53,13 +95,7 @@ const Student = () => {
             </thead>
             <tbody>
               {
-                students.map((s) =>(
-                  updateState === s.sn ? <EditList
-                  key={s.SN}
-                  s={s} 
-                  students={students} 
-                  setStudents={setStudents}
-                  setUpdateState={setUpdateState}/> :
+                students.map((s) => (
                   <tr key={s.SN}>
                     <td>{s.SN}</td>
                     <td>{s.AdmissionNo}</td>
@@ -67,48 +103,43 @@ const Student = () => {
                     <td>{s.Class}</td>
                     <td>{s.Gender}</td>
                     <td>{s.city}</td>
-                    <td><img src={'http://localhost:3000/Images/'+s.image} className="student_image"/></td>
+                    <td><img src={`http://localhost:3000/Images/${s.image}`} className="student_image" alt="student"/></td>
                     <td>
-                      <button className="btn btn-info btn-sm" onClick={() =>handleSubmit(s.sn)}>Edit</button>
-                      <button className="btn btn-warning btn-sm" >Delete</button>
+                      <button className="btn btn-warning btn-sm" onClick={() => handleEdit(s)}>Edit</button>
+                      <button className="btn btn-warning btn-sm" onClick={() => setDeleteSN(s.SN)}>Delete</button>
                     </td>
                   </tr>
                 ))
               }
             </tbody>
           </table>
-          
         </div>
+        {editSN &&(
+          <div className="edit-form">
+            <h4>Edit Student</h4>
+            <input name="AdmissonNo" value={editData.AdmissionNo} onChange={handleChange}  placeholder="Admisson No"/>
+            <input name="Name" value={editData.Name} onChange={handleChange} placeholder="Name"/>
+            <input name="Class" value={editData.Class} onChange={handleChange} placeholder="Class"/>
+            <input name="Gender" value={editData.Gender} onChange={handleChange} placeholder="Gender"/>
+            <input name="city" value={editData.city} onChange={handleChange} placeholder="city"/>
+            <input name="image" value={editData.image} onChange={handleChange} placeholder="image"/>
+            <button className="btn btn-success" onClick={handleUpdate}>Update</button>
+            <button className="btn btn-secondary" onClick={() => setEditSN(null)}>Cancel</button>
+          </div>
+        )}
+      </div>
+      <div>
+      {deleteSN &&(
+        <div className="delete-form">
+          <h4>Delete Student</h4>
+            <h4>Are you sure you want to delete this student?</h4>
+            <button className="btn btn-danger" onClick={handleDelete}>Confirm Delete</button>
+            <button className="btn btn-secondary" onClick={() => setDeleteSN(null)}>Cancel</button>
+        </div>
+      )}
       </div>
     </div>
   );
 };
-
-function EditList({s,students,setStudents,setUpdateState}){
-  function handleInputChange(event) {
-    const { name, value } = event.target;
-    // Create an updated list
-    const updatedStudentlist = students.map((student) =>
-      student.SN === s.SN ? { ...student, [name]: value } : student
-    );
-    setStudents(updatedStudentlist);
-  }
-  
-
-  return (
-      <tr>
-        <td><input type="text"  name="S/N" value={s.SN || ''} onChange={handleInputChange}/></td>
-        <td><input type="text" name="Admissionno" value={s.AdmissionNo || ''} onChange={handleInputChange}/></td>
-        <td><input type="text" name="Name" value={s.Name || ''} onChange={handleInputChange}/></td>
-        <td><input type="text" name="Class" value={s.Class || ''} onChange={handleInputChange}/></td>
-        <td><input type="text" name="Gender" value={s.Gender || ''} onChange={handleInputChange}/></td>
-        <td><input type="text" name="City" value={s.city ||''} onChange={handleInputChange}/></td>
-        <td><input type="text" name="Image" value={s.image || ''} onChange={handleInputChange}/></td>
-        <td>
-          <button type="text" onClick={handleUpdate}>Update</button>
-        </td>
-      </tr>
-  )
-}
 
 export default Student;

@@ -265,3 +265,34 @@
     height: 40px;
     border-radius: 50%;
 }
+
+.dropdown{
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    z-index: 200;
+    width: 90px;
+}
+
+/*StudentForm**/
+
+.popup{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    background-color: white;
+    padding: 20px;
+    border: 1px solid #ccc;
+    z-index: 100;
+}
+
+.popup-inner{
+    display: flex;
+    flex-direction: column;
+}
+
+.popup button{
+    margin-top: 10px;
+}

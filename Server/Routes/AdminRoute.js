@@ -4,6 +4,8 @@ import multer from "multer";
 import path from "path";
 import jwt from "jsonwebtoken";
 
+const app = express();
+
 const router = express.Router();
 
 // Admin login route
@@ -24,20 +26,22 @@ router.post('/adminlogin', (req, res) => {
 
 // Multer storage for image upload
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'Public/Images');
-    },
-    filename: (req, file, cb) => {
-        cb(null, `${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`);
+    destination: './uploads/',
+    filename: (req,file,cb) =>{
+        cb(null,file.fieldname + '-'+ Date.now() + path.extname(file.originalname));
     }
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({ storage });
+
+app.post('/upload',upload.single('image'),(req,res)=>{
+    res.send(`File uplaod at ${req.file.path}`);
+});
 
 // Add student route
 router.post('/add_student', upload.single('image'), (req, res) => {
     const { sn, admissionno, studentname, class: studentClass, gender, city } = req.body;
-    const image = req.file ? req.file.filename : null;
+    const image = req.file ? req.file.filename : 'default-image.jpg';
 
     if (!admissionno || !studentname || !studentClass || !gender || !city) {
         return res.json({ Status: false, Error: "Missing required fields" });
@@ -70,25 +74,46 @@ router.get('/student/:sn',(req,res)=>{
     })
 })
 
+//Get students by StudentForm
+router.get('/studentform',(req,res) =>{
+    const StudentForm = req.query.StudentForm;
+    const sql = "SELECT * FROM student WHERE SN=?";
+    con.query(sql,[StudentForm] ,(err, result) => {
+        if (err) return res.json({Status:false, Error:"Query Error"})
+            return res.json({Status:true,Result:result});
+    });
+});
+
 //Get students by class 
 router.get('/student_class',(req,res)=>{
-    const Class = req.query.Class;
+    const className = req.query.Class;
     const sql = "SELECT * FROM student WHERE Class =?";
-    con.query(sql,[Class],(err,result)=>{
+    con.query(sql,[className],(err,result)=>{
         if (err) return res.json({Status:false,Error:"Query Error"});
         return res.json({Status:true, Result:result});
     });
 });
 
+
+
 // Update student route
 router.put('/edit_student/:sn', (req, res) => {
     const sn = req.params.sn;
-    const { admissionno, studentname, class: studentClass, gender, city } = req.body;
-
+    const { AdmissionNo, Name, Class, Gender, city } = req.body;
     const sql = `UPDATE student SET AdmissionNo = ?, Name = ?, Class = ?, Gender = ?, city = ? WHERE sn = ?`;
-    const values = [admissionno, studentname, studentClass, gender, city, sn];
+    const values = [AdmissionNo, Name, Class, Gender, city, sn];
 
     con.query(sql, values, (err, result) => {
+        if (err) return res.json({ Status: false, Error: "Query Error" });
+        return res.json({ Status: true, Result: result });
+    });
+});
+
+//Delete student Route
+router.delete('/delete_student/:sn', (req, res) => {
+    const sn = req.params.sn;
+    const sql = `DELETE FROM student WHERE sn = ?`; // Only need `sn` to delete
+    con.query(sql, [sn], (err, result) => {
         if (err) return res.json({ Status: false, Error: "Query Error" });
         return res.json({ Status: true, Result: result });
     });
@@ -111,6 +136,8 @@ router.post('/add_staff', upload.single('image'), (req, res) => {
         return res.json({ Status: true });
     });
 });
+
+
 
 // Get all staff
 router.get('/staff', (req, res) => {

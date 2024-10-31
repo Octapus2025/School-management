@@ -1,10 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { Tabs, Tab, Box } from '@mui/material';
 import axios from 'axios';
+import {FaEllipsisV} from "react-icons/fa"
+import './Styles.css';
+import Popup from '../Pages/Popup';
+import StudentForm from '../Pages/StudentForm';
 
 const Class = () => {
     const [value, setValue] = useState(0); // State to manage active tab
     const [students, setStudents] = useState({}); // State to store students for each grade
+    const [openPopup,setOpenPopup] = useState(false);
+    const [selectedStudent,setSelectedStudent] = useState(null)
+    const [dropdownVisible,setDropDownVisible] = useState(null);
+
+    const toggleDropdown = (i)=>{
+        setDropDownVisible(dropdownVisible === i ? null : i);
+    }
+    
 
     // Function to fetch students based on the grade
     useEffect(()=>{
@@ -32,6 +44,13 @@ const Class = () => {
         setValue(newValue); // Update tab index on change
     };
 
+    //Function to open popup with selected student data
+    const handleViewClick = (student) => {
+        setSelectedStudent(student); // Corrected this line
+        setOpenPopup(true);
+    };
+    
+
     const Classes = ['Grade 6', 'Grade 7', 'Grade 8', 'Grade 9', 'Grade 10', 'Grade 11'];
 
     return (
@@ -57,17 +76,34 @@ const Class = () => {
                                                                 <th>Student Name</th>
                                                                 <th>Class</th>
                                                                 <th>Admission No</th>
+                                                                <th>More</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            {
-                                                                <tr key={i}>
-                                                                    <td>{s.Name}</td>
-                                                                    <td>{s.Class}</td>
-                                                                    <td>{s.AdmissionNo}</td>
+                                                            {students[grade].map((student, i) => (
+                                                                <tr key={student.AdmissionNo || i}>
+                                                                    <td>{student.Name}</td>
+                                                                    <td>{student.Class}</td>
+                                                                    <td>{student.AdmissionNo}</td>
+                                                                    <td>
+                                                                        <button onClick={() => toggleDropdown(i)}>
+                                                                            <FaEllipsisV />
+                                                                        </button>
+                                                                        {dropdownVisible === i && (
+                                                                            <div className="dropdown">
+                                                                                <ul>
+                                                                                    <li><button>Edit</button></li>
+                                                                                    <li><button>Delete</button></li>
+                                                                                    <li>
+                                                                                        <button onClick={() => handleViewClick(student)}
+                                                                                        >View</button>
+                                                                                    </li>
+                                                                                </ul>
+                                                                            </div>
+                                                                        )}
+                                                                    </td>
                                                                 </tr>
-                                                            }
-                                                            
+                                                            ))}
                                                         </tbody>
                                                     </table>
                                                 </div>
@@ -84,6 +120,14 @@ const Class = () => {
                         )
                     ))}
                 </Box>
+                {/**Popup component */}
+                <Popup 
+                    openPopup={openPopup}
+                    setOpenPopup={setOpenPopup}
+                    student={selectedStudent} // Pass the selected data of the student
+                >
+                    <StudentForm student={selectedStudent} />
+                </Popup>               
             </div>
         </div>
     );
