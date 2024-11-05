@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import './Styles.css';
+import '../Styles.css';
 
 const Student = () => {
   const [students, setStudents] = useState([]); // list of students
@@ -8,6 +8,9 @@ const Student = () => {
   const [editData,setEditData] = useState({
     AdmissionNo:'',
     Name:'',
+    ParentsName:'',
+    ParentsContactNumber:'',
+    HomeAddress:'',
     Class:'',
     Gender:'',
     city:'',
@@ -86,6 +89,9 @@ const Student = () => {
                 <th>S/N</th>
                 <th>Admission No</th>
                 <th>Student Name</th>
+                <th>Parents Name</th>
+                <th>Parents ContactNumber</th>
+                <th>Home Address</th>
                 <th>Class</th>
                 <th>Gender</th>
                 <th>State</th>
@@ -100,10 +106,13 @@ const Student = () => {
                     <td>{s.SN}</td>
                     <td>{s.AdmissionNo}</td>
                     <td>{s.Name}</td>
+                    <td>{s.ParentsName}</td>
+                    <td>{s.ParentsContactNumber}</td>
+                    <td>{s.HomeAddress}</td>
                     <td>{s.Class}</td>
                     <td>{s.Gender}</td>
                     <td>{s.city}</td>
-                    <td><img src={`http://localhost:3000/Images/${s.image}`} className="student_image" alt="student"/></td>
+                    <td><img src={`http://localhost:3000/Images/${s.image}`} className="student_image" /></td>
                     <td>
                       <button className="btn btn-warning btn-sm" onClick={() => handleEdit(s)}>Edit</button>
                       <button className="btn btn-warning btn-sm" onClick={() => setDeleteSN(s.SN)}>Delete</button>
@@ -119,12 +128,15 @@ const Student = () => {
             <h4>Edit Student</h4>
             <input name="AdmissonNo" value={editData.AdmissionNo} onChange={handleChange}  placeholder="Admisson No"/>
             <input name="Name" value={editData.Name} onChange={handleChange} placeholder="Name"/>
+            <input name="ParentsName" value={editData.ParentsName} onChange={handleChange} placeholder="ParentsName"/>
+            <input name="ParentsContactNumber" value={editData.ParentsContactNumber} onChange={handleChange} placeholder="ParentsContactNumber"/>
+            <input name="HomeAddress" value={editData.HomeAddress} onChange={handleChange} placeholder="Home Address"/>
             <input name="Class" value={editData.Class} onChange={handleChange} placeholder="Class"/>
             <input name="Gender" value={editData.Gender} onChange={handleChange} placeholder="Gender"/>
             <input name="city" value={editData.city} onChange={handleChange} placeholder="city"/>
             <input name="image" value={editData.image} onChange={handleChange} placeholder="image"/>
             <button className="btn btn-success" onClick={handleUpdate}>Update</button>
-            <button className="btn btn-secondary" onClick={() => setEditSN(null)}>Cancel</button>
+            <button className="btn btn-secondary" onClick={() => setEditID(null)}>Cancel</button>
           </div>
         )}
       </div>

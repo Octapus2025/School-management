@@ -54,8 +54,8 @@ const AddStaff =()=>{
                                 onChange={(e) => setStaff({...staff,teachername: e.target.value })}/>
                             </div>
                             <div className="col-12">
-                                <label htmlFor="inputAge" className="form-label">Email</label>
-                                <input type="text" id="inputAge" placeholder="Enter Age" className='form-control rounded-0' 
+                                <label htmlFor="inputEmail" className="form-label">Email</label>
+                                <input type="text" id="inputEmail" placeholder="Enter Email" className='form-control rounded-0' 
                                 onChange={(e) => setStaff({...staff,email: e.target.value })}/>
                             </div>
                             <div className="col-12">

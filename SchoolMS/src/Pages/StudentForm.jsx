@@ -51,7 +51,7 @@ const StudentForm = ({ openPopup }) => {
                                         <td>{s.Class}</td>
                                         <td>{s.Gender}</td>
                                         <td>{s.City}</td>
-                                        <td><img src={`/Public/Image/${s.image}`} alt="student" style={{width: '50px'}}/></td>
+                                        <td><img src={`/Public/Image/${s.image}`}  style={{width: '50px'}}/></td>
                                     </tr>
                                 ))
                             }
