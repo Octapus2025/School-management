@@ -1,19 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
 
-const StudentForm = ({ openPopup }) => {
-    if (!openPopup) return null;
+const StudentForm = ({ openPopup,selectedStudent }) => {
+    if (!openPopup ||!selectedStudent) return null;
 
-    const [students, setStudents] = useState([]);
-    const { SN } = useParams(); // Use params to get the class identifier
+    const [studentDetails, setStudentDetails] = useState([]);
 
     useEffect(() => {
         const fetchStudentsDetails = async () => {
             try {
-                const response = await axios.get(`http://localhost:3000/auth/student?Class=${SN}`);
+                const response = await axios.get(`http://localhost:3000/auth/student?AdmissionNo=${selectedStudent}`);
                 if (response.data.Status) {
-                    setStudents(response.data.Result);
+                    setStudentDetails(response.data.Result);
                 } else {
                     console.error(response.data.Error);
                 }
@@ -22,13 +20,13 @@ const StudentForm = ({ openPopup }) => {
             }
         };
         fetchStudentsDetails();
-    }, [SN]);  // Add SN as a dependency
+    }, [selectedStudent]);  
 
     return (
         <div className="popup">
             <div className="popup-inner">
-                <h3>Students Details</h3>
-                <div className="mt-3">
+                <h3>Student Details</h3>
+                {studentDetails ? (
                     <table className="table">
                         <thead>
                             <tr>
@@ -42,22 +40,22 @@ const StudentForm = ({ openPopup }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {
-                                students.map((s, index) => (
-                                    <tr key={index}>
-                                        <td>{index + 1}</td>
-                                        <td>{s.AdmissionNo}</td>
-                                        <td>{s.Name}</td>
-                                        <td>{s.Class}</td>
-                                        <td>{s.Gender}</td>
-                                        <td>{s.City}</td>
-                                        <td><img src={`/Public/Image/${s.image}`}  style={{width: '50px'}}/></td>
-                                    </tr>
-                                ))
-                            }
+                            <tr>
+                                <td>1</td>
+                                <td>{studentDetails.AdmissionNo}</td>
+                                <td>{studentDetails.Name}</td>
+                                <td>{studentDetails.Class}</td>
+                                <td>{studentDetails.Gender}</td>
+                                <td>{studentDetails.City}</td>
+                                <td>
+                                    <img src={`/Public/Image/${studentDetails.image}`} style={{ width: '50px' }} alt="Student" />
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
-                </div>
+                ) : (
+                    <p>Loading student details...</p>
+                )}
             </div>
         </div>
     );

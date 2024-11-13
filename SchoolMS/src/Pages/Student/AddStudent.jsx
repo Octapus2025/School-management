@@ -3,7 +3,6 @@ import axios from "axios";
 
 const AddStudent = ({ initialClass }) => {
   const [student, setStudent] = useState({
-    sn: "",
     admissionno: "",
     studentname: "",
     parentsname: "",
@@ -13,6 +12,8 @@ const AddStudent = ({ initialClass }) => {
     gender: "",
     city: "",
     image: "",
+    username:"",
+    password:"",
   });
 
   const [successAlert, setSuccessAlert] = useState(false); // State for success alert
@@ -47,7 +48,6 @@ const AddStudent = ({ initialClass }) => {
 
           // Reset the form
           setStudent({
-            sn: "",
             admissionno: "",
             studentname: "",
             parentsname: "",
@@ -57,6 +57,8 @@ const AddStudent = ({ initialClass }) => {
             gender: "",
             city: "",
             image: "",
+            username:"",
+            password:"",
           });
           // Hide the alert after 3 seconds
           setTimeout(() => setSuccessAlert(false), 3000);
@@ -82,17 +84,6 @@ const AddStudent = ({ initialClass }) => {
               </div>
             )}
             <form className="row full-width" onSubmit={handleSubmit}>
-              <div className="col-12 mb-3">
-                <label htmlFor="inputSN" className="form-label">S/N:</label>
-                <input
-                    type="text"
-                    id="inputSN"
-                    placeholder="Enter S/N"
-                    className="form-control"
-                    value={student.sn}
-                    onChange={(s) => setStudent({ ...student, sn: s.target.value })}
-                  />
-              </div>
               <div className="col-12 mb-3">
                 <label htmlFor="inputAdmissionNo" className="form-label">Admission No:</label>
                 <input
@@ -186,8 +177,22 @@ const AddStudent = ({ initialClass }) => {
                 <input type="file" id="inputGroupFile01" name="image" placeholder="Enter Image" className='form-control ' 
                   onChange={(s) => setStudent({ ...student, image: s.target.files[0] })} />
               </div>
+              <form  className="row full-width" onSubmit={handleSubmit}>
+                <div className="col-12 mb-3">
+                  <label htmlFor="inputUserName" className="form-label">UserName:</label>
+                  <input type="text" name="username" placeholder="Enter UserName" className='form-control'
+                    onChange={(s) => setStudent({ ...student, username: s.target.value })} />
+                </div>
+                <div className="col-12 mb-3">
+                  <label htmlFor="inputPassword" className="form-label">Password:</label>
+                  <input type="text" name="password" placeholder="Enter Password" className='form-control'
+                    onChange={(s) => setStudent({ ...student, password: s.target.value })} />
+                </div>
+              </form>
+              
               <button type="submit" className="btn btn-primary w-100">Add Student</button>
             </form>
+            
           </div>
         </div>
       </div>

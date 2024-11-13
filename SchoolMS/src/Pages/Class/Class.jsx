@@ -46,7 +46,7 @@ const Class = () => {
 
     // Function to open popup with selected student data
     const handleViewClick = (student) => {
-        setSelectedStudent(student);
+        setSelectedStudent(student.AdmissionNo);
         setOpenPopup(true);
     };
 
