@@ -4,9 +4,8 @@ import '../Styles.css';
 
 const Student = () => {
   const [students, setStudents] = useState([]); // list of students
-  const [editSN,setEditSN] = useState(null); // SN of the student being edited
+  const [editAdmissionNo,setEditAdmissionNo] = useState(null); // SN of the student being edited
   const [editData,setEditData] = useState({
-    AdmissionNo:'',
     Name:'',
     ParentsName:'',
     ParentsContactNumber:'',
@@ -16,7 +15,7 @@ const Student = () => {
     city:'',
     image:'',
   }); // Editable student data
-  const [deleteSN,setDeleteSN] = useState(null);// SN of the student being deleted
+  const [deleteAdmissionNo,setDeleteAdmissionNo] = useState(null);// SN of the student being deleted
   
 
 
@@ -37,7 +36,7 @@ const Student = () => {
 
   //Handle Edit button Click
   const handleEdit = (student)=>{
-    setEditSN(student.SN);//Set the current student ID
+    setEditAdmissionNo(student.AdmissionNo);//Set the current student ID
     setEditData(student); // Populate editData with current student info
   };
 
@@ -50,12 +49,12 @@ const Student = () => {
 
   // Handle update submission
   const handleUpdate = ()=> {
-    axios.put(`http://localhost:3000/auth/edit_student/${editSN}`,editData)
+    axios.put(`http://localhost:3000/auth/edit_student/${editAdmissionNo}`,editData)
       .then (response => {
         if (response.data.Status){
             // Update students 
-            setStudents(students.map(item => item.SN === editSN ? {...item, ...editData} : item));
-            setEditSN(null); // Exit edit mode
+            setStudents(students.map(item => item.AdmissionNo === editAdmissionNo ? {...item, ...editData} : item));
+            setEditAdmissionNo(null); // Exit edit mode
         } else {
           console.error(response.data.Error); //Handle Errors
         }   
@@ -65,12 +64,12 @@ const Student = () => {
 
   //Handle Delete 
     const handleDelete = ()=>{
-      axios.delete(`http://localhost:3000/auth/delete_student/${deleteSN}`)
+      axios.delete(`http://localhost:3000/auth/delete_student/${deleteAdmissionNo}`)
         .then(response => {
           if (response.data.Status){
             //Delete students
-            setStudents(students.filter(item => item.SN !== deleteSN ));
-            setDeleteSN(null);// Exit edit mode
+            setStudents(students.filter(item => item.AdmissionNo !== deleteAdmissionNo ));
+            setDeleteAdmissionNo(null);// Exit edit mode
           } else{
             console.error(response.data.Error); // Handle Errors
           }
@@ -86,7 +85,6 @@ const Student = () => {
           <table className="table">
             <thead>
               <tr>
-                <th>S/N</th>
                 <th>Admission No</th>
                 <th>Student Name</th>
                 <th>Parents Name</th>
@@ -102,8 +100,7 @@ const Student = () => {
             <tbody>
               {
                 students.map((s) => (
-                  <tr key={s.SN}>
-                    <td>{s.SN}</td>
+                  <tr key={s.AdmissionNo}>
                     <td>{s.AdmissionNo}</td>
                     <td>{s.Name}</td>
                     <td>{s.ParentsName}</td>
@@ -115,7 +112,7 @@ const Student = () => {
                     <td><img src={`http://localhost:3000/Images/${s.image}`} className="student_image" /></td>
                     <td>
                       <button className="btn btn-warning btn-sm" onClick={() => handleEdit(s)}>Edit</button>
-                      <button className="btn btn-warning btn-sm" onClick={() => setDeleteSN(s.SN)}>Delete</button>
+                      <button className="btn btn-warning btn-sm" onClick={() => setDeleteAdmissionNo(s.AdmissionNo)}>Delete</button>
                     </td>
                   </tr>
                 ))
@@ -123,10 +120,9 @@ const Student = () => {
             </tbody>
           </table>
         </div>
-        {editSN &&(
+        {editAdmissionNo &&(
           <div className="edit-form">
             <h4>Edit Student</h4>
-            <input name="AdmissonNo" value={editData.AdmissionNo} onChange={handleChange}  placeholder="Admisson No"/>
             <input name="Name" value={editData.Name} onChange={handleChange} placeholder="Name"/>
             <input name="ParentsName" value={editData.ParentsName} onChange={handleChange} placeholder="ParentsName"/>
             <input name="ParentsContactNumber" value={editData.ParentsContactNumber} onChange={handleChange} placeholder="ParentsContactNumber"/>
@@ -141,12 +137,12 @@ const Student = () => {
         )}
       </div>
       <div>
-      {deleteSN &&(
+      {deleteAdmissionNo &&(
         <div className="delete-form">
           <h4>Delete Student</h4>
             <h4>Are you sure you want to delete this student?</h4>
             <button className="btn btn-danger" onClick={handleDelete}>Confirm Delete</button>
-            <button className="btn btn-secondary" onClick={() => setDeleteSN(null)}>Cancel</button>
+            <button className="btn btn-secondary" onClick={() => setDeleteAdmissionNo(null)}>Cancel</button>
         </div>
       )}
       </div>

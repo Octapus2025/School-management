@@ -51,15 +51,15 @@ app.post('/upload',upload.single('image'),(req,res)=>{
 
 // Add student route
 router.post('/add_student', upload.single('image'), (req, res) => {
-    const { sn, admissionno, studentname,parentsname,parentscontactnumber,homeaddress ,class: studentClass, gender, city } = req.body;
+    const {  admissionno, studentname,parentsname,parentscontactnumber,homeaddress ,class: studentClass, gender, city,username,password } = req.body;
     const image = req.file ? req.file.filename : 'default-image.png';
 
     if (!admissionno || !studentname || !studentClass || !gender || !city) {
         return res.json({ Status: false, Error: "Missing required fields" });
     }
 
-    const sql = `INSERT INTO student (SN, AdmissionNo, Name, ParentsName,ParentsContactNumber,HomeAddress,Class, Gender, city, image) VALUES (?)`;
-    const values = [sn, admissionno, studentname, parentsname,parentscontactnumber,homeaddress,studentClass, gender, city, image];
+    const sql = `INSERT INTO student ( AdmissionNo, Name, ParentsName,ParentsContactNumber,HomeAddress,Class, Gender, city, UserName,Password,image) VALUES (?)`;
+    const values = [ admissionno, studentname, parentsname,parentscontactnumber,homeaddress,studentClass, gender, city,username,password, image];
 
     con.query(sql, [values], (err, result) => {
         if (err) return res.json({ Status: false, Error: err.message });
@@ -67,6 +67,36 @@ router.post('/add_student', upload.single('image'), (req, res) => {
     });
 });
   
+
+//Fetch payment details for a specific student
+router.get('/student/:admissonno/payments',(res,req)=>{
+    const {admissionNo} = req.params;
+    db.query('SELECT * FROM student_payments WHERE student_admisson_no = ?',[admissionNo],(err,results)=>{
+        if (err) return res.status(500).json(err);
+        res.json(results);
+    });
+});
+
+//Update payment for a specific term
+router.post('/student/:admissonno/payments',(req,res)=>{
+    const {admissionNo} = req.params;
+    const {term,amountPaid}= req.body;
+
+    //Fetch current payment record 
+    db.query('SELECT * FROM student_payments WHERE student_admission_no = ? AND term = ?',[admissionNo,term],(err,results)=>{
+        if (err) return res.status(500).json(err);
+        if (results.length === 0) return res.status(404).json({message: 'Payment record not found'});
+
+        const payment = results[0];
+        const newAmountPaid = payment.amount_paid + amountPaid;
+        const status = newAmountPaid >= payment.amount_due ? 'Paid':'Unpaid' ;
+
+        db.query('UPDATE student_payments SET amount_paid=?,status = ?, WHERE admissionno =?',[newAmountPaid,status,payment.admissionNo],(err)=>{
+           if(err) return res.status(500).json(err);
+           res.json({message:'Payment updated successfully',status}); 
+        });
+    });
+});
 
 // Get all students
 router.get('/student', (req, res) => {
@@ -120,11 +150,12 @@ router.get('/student_admissonno',(req,res) =>{
 
 
 // Update student route
-router.put('/edit_student/:sn', (req, res) => {
-    const sn = req.params.sn;
-    const { AdmissionNo, Name, Class, Gender, city } = req.body;
-    const sql = `UPDATE student SET AdmissionNo = ?, Name = ?, Class = ?, Gender = ?, city = ? WHERE sn = ?`;
-    const values = [AdmissionNo, Name, Class, Gender, city, sn];
+router.put('/edit_student/:admissionno', (req, res) => {
+    const admissionno = req.params.admissionno;
+    const { Name,ParentsName,ParentsContactNumber,Class, Gender, city } = req.body;
+    const sql = `UPDATE student SET  Name = ?, ParentsName  =?, ParentsContactNumber = ?, Class = ?, Gender = ?, city = ? WHERE AdmissionNo = ? `;
+    const values = [  Name,ParentsName,ParentsContactNumber,Class, Gender, city,admissionno];
+
 
     con.query(sql, values, (err, result) => {
         if (err) return res.json({ Status: false, Error: "Query Error" });
@@ -133,10 +164,10 @@ router.put('/edit_student/:sn', (req, res) => {
 });
 
 //Delete student Route
-router.delete('/delete_student/:sn', (req, res) => {
-    const sn = req.params.sn;
-    const sql = `DELETE FROM student WHERE sn = ?`; // Only need `sn` to delete
-    con.query(sql, [sn], (err, result) => {
+router.delete('/delete_student/:admissionno', (req, res) => {
+    const admissonno = req.params.admissionno;
+    const sql = `DELETE FROM student WHERE admissionno = ?`; // Only need `sn` to delete
+    con.query(sql, [admissonno], (err, result) => {
         if (err) return res.json({ Status: false, Error: "Query Error" });
         return res.json({ Status: true, Result: result });
     });
