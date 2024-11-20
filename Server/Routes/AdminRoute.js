@@ -3,9 +3,13 @@ import { con } from '../utils/db.js';
 import multer from "multer";
 import path from "path";
 import jwt from 'jsonwebtoken';
+import { count, error } from 'console';
+import { fileURLToPath } from 'url';
 
 const app = express();
 const router = express.Router();
+
+
 
 // Admin login route
 router.post('/adminlogin', (req, res) => {
@@ -23,18 +27,23 @@ router.post('/adminlogin', (req, res) => {
     });
 });
 
+//Define __dirname in ES module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 // Multer storage for image upload
 const storage = multer.diskStorage({
-    destination: './uploads/',
+    destination: path.join(__dirname,'uploads'),
     filename: (req,file,cb) =>{
         cb(null,file.fieldname + '-'+ Date.now() + path.extname(file.originalname));
     }
 });
 
-const upload = multer({ storage });
+const upload = multer({ storage:storage });
 
 //Server static files from the uploads directory
-app.use('/Images',express.static('uploads'));
+app.use('/Images', express.static(path.join(__dirname, 'Images')));
+
 
 app.post('/upload',upload.single('image'),(req,res)=>{
     res.send(`File uplaod at ${req.file.path}`);
@@ -98,6 +107,17 @@ router.get('/student_class',(req,res)=>{
 });
 
 
+//Get students Details by View
+router.get('/student_admissonno',(req,res) =>{
+    const admissionno = req.query.AdmissionNo;
+    const sql = "SELECT * FROM student WHERE AdmissionNo =?";
+    con.query(sql,[admissionno],(err,result)=>{
+        if(err) return res.json({Status:false,Error:"Query Error"});
+        console.log(result);
+        return res.json({Status:true,Result:result});
+    })
+})
+
 
 // Update student route
 router.put('/edit_student/:sn', (req, res) => {
@@ -125,7 +145,7 @@ router.delete('/delete_student/:sn', (req, res) => {
 // Add staff route
 router.post('/add_staff', upload.single('image'), (req, res) => {
     const { id, teachername, email, contactnumber, dob, gender, city, subject, education:educationalqualification, university, description, nic, joindate } = req.body;
-    const image = req.file ? req.file.filename : null;
+    const image = req.file ? req.file.filename : 'default.png';
 
     //Validate required fields, including
     if (!teachername || !email || !contactnumber || !gender || !subject) {
@@ -174,5 +194,17 @@ router.get('/staff', (req, res) => {
         return res.json({ Status: true, Result: result });
     });
 });
+
+//Set the student count
+app.get('/studentcount', async (req, res) => {
+    try {
+        const studentcount = await db.query('SELECT COUNT(*) AS count FROM student');
+        res.json({ count: studentcount[0].count }); // Fix: Ensure proper JSON format
+    } catch (error) {
+        console.error('Error fetching student count:', error);
+        res.status(500).json({ message: 'Error fetching student count' });
+    }
+});
+
 
 export { router as adminRouter };
