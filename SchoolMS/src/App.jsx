@@ -11,7 +11,10 @@ import Class from './Pages/Class/Class';
 import TimeTable from './Pages/TimeTable';
 import AddStaff from './Pages/Staff/Addstaff';
 import PrivateRoute from './PrivateRoute/PrivateRoute';
-
+import AddNotice from './Pages/Notice/AddNotice';
+import ParentsLogin from './User/Parents/ParentsLogin';
+import ParentsDashboard from './User/Parents/ParentsDashboard';
+import Notices from './User/Notices/Notices';
 
 
 
@@ -31,6 +34,12 @@ function App() {
           <Route path='addstaff' element={<PrivateRoute><AddStaff /></PrivateRoute>} />
           <Route path='payments' element={<PrivateRoute><Payments /></PrivateRoute>} />
           <Route path='timetable' element={<PrivateRoute><TimeTable /></PrivateRoute>} />
+          <Route path='addnotice' element={<PrivateRoute><AddNotice/></PrivateRoute>} />
+        </Route>
+
+        <Route path='/parentslogin' element={<PrivateRoute><ParentsLogin/></PrivateRoute>}/>
+        <Route path='/parentsdashboard' element={<PrivateRoute><ParentsDashboard/></PrivateRoute>}>
+          <Route path='notices' element={<PrivateRoute><Notices/></PrivateRoute>}/>
         </Route>
       </Routes>
     </Router>

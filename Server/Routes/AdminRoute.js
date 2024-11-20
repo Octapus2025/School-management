@@ -98,6 +98,30 @@ router.post('/student/:admissonno/payments',(req,res)=>{
     });
 });
 
+//Post Noticec
+router.post('/add_notice', async (req, res) => {
+    const { AdmissionNo, NoticeText } = req.body;
+    const sql = `INSERT INTO notices (AdmissionNo, NoticeText) VALUES (?, ?)`;
+    con.query(sql, [AdmissionNo, NoticeText], (err, result) => {
+        if (err) {
+            console.error("Database Error:", err);  // Log error details
+            return res.json({ Status: false, Error: err });
+        }
+        res.json({ Status: true, Result: result });
+    });
+});
+
+
+
+//get all notice
+router.get('/notices',(req,res)=>{
+    const sql = "SELECT * FROM notices";
+    con.query(sql,(err,result)=>{
+        if (err) return res.json({ Status: false, Error: "Query Error" });
+        return res.json({ Status: true, Result: result });
+    })
+})
+
 // Get all students
 router.get('/student', (req, res) => {
     const sql = "SELECT * FROM student";
@@ -226,8 +250,25 @@ router.get('/staff', (req, res) => {
     });
 });
 
+// Parents Route
+router.post('/parentslogin', (req, res) => {
+    const sql = "SELECT * FROM student WHERE AdmissionNo = ? AND UserName = ? AND Password = ?";
+    con.query(sql, [req.body.AdmissionNo, req.body.UserName, req.body.Password], (err, result) => {
+        if (err) return res.json({ loginStatus: false, Error: "Query error" });
+        
+        if (result.length > 0) {
+            const UserName = result[0].UserName;
+            const token = jwt.sign({ role: "user", UserName: UserName }, "jwt_secret_key", { expiresIn: "1d" });
+            res.cookie('token', token, { httpOnly: true });
+            return res.json({ loginStatus: true, token: token });
+        } else {
+            return res.json({ loginStatus: false, Error: "Wrong username or password" });
+        }
+    });
+});
+
 //Set the student count
-app.get('/studentcount', async (req, res) => {
+router.get('/studentcount', async (req, res) => {
     try {
         const studentcount = await db.query('SELECT COUNT(*) AS count FROM student');
         res.json({ count: studentcount[0].count }); // Fix: Ensure proper JSON format

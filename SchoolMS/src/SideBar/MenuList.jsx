@@ -35,6 +35,9 @@ const MenuList = () => {
             <Menu.Item key="timetable" icon={<ScheduleOutlined />}>
                 <Link to="/dashboard/timetable">Time Table</Link> {/* Ensure correct path for timetable */}
             </Menu.Item>
+            <Menu.Item key="Add Notice" icon={<ScheduleOutlined />}>
+                <Link to="/dashboard/addnotice">Add Notice</Link> {/* Ensure correct path for timetable */}
+            </Menu.Item>
         </Menu>
     );
 };
